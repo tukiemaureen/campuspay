@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusPay - Student e-Wallet</title>
+  
+  <!-- PWA Manifest & Theme -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0d1127">
+
+  <!-- Inside <head>, right above style.css -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registered! Scope:', reg.scope))
+          .catch(err => console.error('Service Worker registration failed:', err));
+      });
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo-tag">CampusPay</div>
+    <h1>A Little Change.</h1>
+    <nav>
+      <button onclick="showSection('dashboard')" id="nav-dashboard" class="active">Dashboard</button>
+      <button onclick="showSection('scan-qr')" id="nav-scan-qr">📷 Scan QR</button>
+      <button onclick="showSection('pay-merchant')" id="nav-pay-merchant">Pay</button>
+      <button onclick="showSection('send-money')" id="nav-send-money">Send</button>
+      <button onclick="showSection('history')" id="nav-history">History</button>
+    </nav>
+
+  </header>
+
+  <main>
+    <!-- SECTION 1: DASHBOARD -->
+    <section id="dashboard" class="page-section">
+      <div class="card balance-card">
+        <h3>Current Balance</h3>
+        <p class="balance-amount">K<span id="user-balance">250.00</span></p>
+      </div>
+
+      <div class="card">
+        <h3>Quick Actions</h3>
+        <div class="quick-buttons">
+          <button onclick="showSection('pay-merchant')">🛒 Pay Merchant</button>
+          <button onclick="showSection('send-money')">💸 Send Money</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Recent Activity</h3>
+        <ul id="dashboard-recent-list" class="transaction-list">
+          <!-- Populated via JS -->
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 2: SCAN QR CODE -->
+    <section id="scan-qr" class="page-section hidden">
+      <div class="card">
+        <h2>Scan Merchant or Student QR</h2>
+        <p>Point your camera at a CampusPay QR code or barcode to make an instant payment.</p>
+    
+        <!-- Camera Viewport Box -->
+        <div id="qr-reader" style="width: 100%; max-width: 400px; margin: 20px auto; border-radius: 12px; overflow: hidden;"></div>
+        <div id="qr-reader-results"></div>
+      </div>
+    </section> 
+
+    <!-- SECTION 3: PAY MERCHANT -->
+    <section id="pay-merchant" class="page-section hidden">
+      <div class="card">
+        <h2>Pay Campus Merchant</h2>
+        <form id="merchant-form" onsubmit="handleMerchantPay(event)">
+          <label for="merchant-select">Select Merchant:</label>
+          <select id="merchant-select" required>
+            <option value="">-- Choose a Merchant --</option>
+            <option value="Campus Canteen">Campus Canteen</option>
+            <option value="University Bookstore">University Bookstore</option>
+            <option value="Campus Tuckshop">Campus Tuckshop</option>
+            <option value="Campus Finance Department">Campus Finance Department</option>
+          </select>
+
+          <label for="merchant-amount">Amount (ZMW / K):</label>
+          <input type="number" id="merchant-amount" min="1" step="0.01" placeholder="e.g. 35" required>
+
+          <button type="submit" class="btn-primary">Pay Now</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- SECTION 4: SEND MONEY TO STUDENT -->
+    <section id="send-money" class="page-section hidden">
+      <div class="card">
+        <h2>Send Money to Student</h2>
+        <form id="p2p-form" onsubmit="handleSendMoney(event)">
+          <label for="recipient-id">Student ID / Name:</label>
+          <input type="text" id="recipient-id" placeholder="e.g. STU9872 or Alice" required>
+
+          <label for="p2p-amount">Amount (ZMW / K):</label>
+          <input type="number" id="p2p-amount" min="1" step="0.01" placeholder="e.g. 20" required>
+
+          <button type="submit" class="btn-primary">Send Money</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- SECTION 5: TRANSACTION HISTORY -->
+    <section id="history" class="page-section hidden">
+      <div class="card">
+        <h2>Full Transaction History</h2>
+        <ul id="full-history-list" class="transaction-list">
+          <!-- Populated via JS -->
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- RECEIPT MODAL POPUP -->
+  <div id="receipt-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="receipt-header">
+        <span class="icon">✅</span>
+        <h2 style="margin-top: 10px;">Payment Successful</h2>
+      </div>
+      <div class="receipt-body">
+        <p><strong>Amount:</strong> K<span id="receipt-amount">0.00</span></p>
+        <p><strong>To:</strong> <span id="receipt-recipient">-</span></p>
+        <p><strong>Type:</strong> <span id="receipt-type">-</span></p>
+        <p><strong>Date & Time:</strong> <span id="receipt-date">-</span></p>
+        <p><strong>Reference:</strong> #<span id="receipt-ref">00000</span></p>
+      </div>
+      <button onclick="closeReceipt()" class="btn-secondary">Close Receipt</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

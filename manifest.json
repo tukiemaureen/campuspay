@@ -1,0 +1,21 @@
+{
+    "short_name": "CampusPay",
+    "name": "CampusPay Student Wallet",
+    "icons": [
+      {
+        "src": "https://via.placeholder.com/192x192/6366f1/ffffff?text=CP",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "https://via.placeholder.com/512x512/6366f1/ffffff?text=CP",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "./index.html",
+    "background_color": "#0d1127",
+    "theme_color": "#0d1127",
+    "display": "standalone",
+    "orientation": "portrait"
+  }
